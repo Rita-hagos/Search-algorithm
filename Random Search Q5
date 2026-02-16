@@ -1,0 +1,63 @@
+#include <iostream>
+#include <vector>
+#include <random>
+
+using namespace std;
+
+// Shuffle indices so each index is visited once in random order
+
+void shuffleIndices(vector<int>& indices) {
+    random_device rd;
+    mt19937 gen(rd());
+
+    for (int i = (int)indices.size() - 1; i > 0; --i) {
+        uniform_int_distribution<int> dist(0, i);
+        int j = dist(gen);
+
+        int temp = indices[i];
+        indices[i] = indices[j];
+        indices[j] = temp;
+    }
+}
+
+// Randomized search w/out repetition
+int randomizedSearch(const vector<int>& data, int key, int& comparisons) {
+    comparisons = 0;
+    int N = (int)data.size();
+
+    vector<int> indices(N);
+    for (int i = 0; i < N; ++i)
+        indices[i] = i;
+
+    shuffleIndices(indices);
+
+    for (int k = 0; k < N; ++k) {
+        int i = indices[k];
+        comparisons++;                // count comparison
+        if (data[i] == key)
+            return i;
+    }
+
+    return -1; // not found
+}
+
+int main() {
+    const int N = 4001;   // 0 to 4000
+    vector<int> data(N);
+
+    // Fill with numbers 0 to 4000
+    for (int i = 0; i < N; ++i)
+        data[i] = i;
+
+    int key;
+    cout << "Enter number to search (0 - 4000): ";
+    cin >> key;
+
+    int comparisons = 0;
+    int result = randomizedSearch(data, key, comparisons);
+
+    cout << "Result index: " << result << endl;
+    cout << "Comparisons: " << comparisons << endl;
+
+    return 0;
+}
